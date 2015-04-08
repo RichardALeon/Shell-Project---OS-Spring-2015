@@ -32,7 +32,7 @@ command:
 	|
 	change_directory
 	|
-	nonsense
+	argument
 	|
 	setenv
 	|
@@ -45,6 +45,8 @@ command:
 	setalias
 	|
 	printalias
+	|
+	removealias
 	;
 
 kill_self:
@@ -58,9 +60,13 @@ kill_self:
 get_path:
 	PWD
 	{
+		/*
 		char cwd[1024];
 		getcwd(cwd, sizeof(cwd));
 		printf("%s\n", cwd);
+		*/
+		CMD_TABLE[COMMAND_COUNT].commandname = "pwd";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_PWD;
 	}
 	;
 
@@ -68,92 +74,155 @@ get_path:
 change_directory:
 	CD
 	{
+	/*
 	char* home = getenv("HOME");
 	chdir(home);
+	*/
+	CMD_TABLE[COMMAND_COUNT].commandname="cd home";
+	CMD_TABLE[COMMAND_COUNT].command_code = CMD_CD_HOME;
 	}
 	|
 	CD WORD
 	{
+		/*
 		if( -1 == chdir($2)) printf("Invalid directory: %s\n", $2);
+		*/
+		CMD_TABLE[COMMAND_COUNT].commandname="cd directory";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_CD_DIR;
+		CMD_TABLE[COMMAND_COUNT].args[0] = $2;
+		CMD_TABLE[COMMAND_COUNT].num_arguments++;
 	}
 	;
 
 setenv:
-	SET_ENVIRONMENT WORD WORD
+	SET_ENVIRONMENT
 	{
+		/*
 		printf("%d\n",set_env_var($2, $3));
+		*/
+		CMD_TABLE[COMMAND_COUNT].commandname="setenv";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_SETENV;
 	}
 	;
 
 unsetenv:
-	UNSET_ENVIRONMENT WORD
+	UNSET_ENVIRONMENT
 	{
+		/*
 		printf("%d\n", unset_env_var($2));
+		*/
+		CMD_TABLE[COMMAND_COUNT].commandname="unsetenv";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_UNSETENV;
 	}
 	;
 
 printenv:
 	PRINT_ENVIRONMENT
 	{
-		print_env_var();
+		CMD_TABLE[COMMAND_COUNT].commandname="printenv";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_PRINTENV;
+		//print_env_var();
 	}
 	;
 
 metacharacter:
 	LESSTHAN
 	{
-		printf("lessthan");
+		
 	} 
 	|
 	GREATERTHAN
 	{
-		printf("greaterthan");
+		
 	}
 	|
 	QUOT
 	{
-		printf("quotationmark");
+		
 	}
 	|
 	AMP
 	{
-		printf("ampersand");
+
 	}
 	|
 	BACKSLASH
 	{
-		printf("backslash");
+
 	}
 	|
 	PIPE
 	{
-		printf("pipe");
+		
 	}
 	;
 
 setalias:
 	ALIAS WORD WORD
 	{
-		setalias($2, $3);
+		CMD_TABLE[COMMAND_COUNT].commandname="alias";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_ALIAS;
+		//setalias($2, $3);
+	}
+	;
+
+removealias:
+	UNALIAS
+	{
+		//removealias($2);
+		CMD_TABLE[COMMAND_COUNT].commandname="unalias";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_UNALIAS;
 	}
 	;
 
 printalias:
-	PRINTALIAS
+	ALIAS
 	{
-		print_aliases();
+		//print_aliases();
+		CMD_TABLE[COMMAND_COUNT].commandname="printalias";
+		CMD_TABLE[COMMAND_COUNT].command_code = CMD_PRINTALIAS;
 	}
 	;
 
-nonsense:
+argument:
 	WORD
 	{
-	printf("I do not recognize that command.\n");
+		//We must check if the entered WORD is an external command (or alias, but that won't be handled here)
+		if(externcommand == NULL) {
+		//This is a command (or an alias), not an argument. make a new command
+			externcommand = $1;
+			CMD_TABLE[COMMAND_COUNT].commandname = externcommand;
+		} else {
+		//This is an argument. Add it to the current command's arguments list, if space permits
+			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;
+			
+			if(numArgs < MAX_ARGUMENTS) {
+				CMD_TABLE[COMMAND_COUNT].args[numArgs] = $1;
+				CMD_TABLE[COMMAND_COUNT].num_arguments++;
+			}
+		}
 	}
 	|
-	nonsense WORD
+	argument WORD
 	{
-	printf("What?\n");
+		//This is an argument. Add it to the current command's arguments list, if space permits
+			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;
+			
+			if(numArgs < MAX_ARGUMENTS) {
+				CMD_TABLE[COMMAND_COUNT].args[numArgs] = $2;
+				CMD_TABLE[COMMAND_COUNT].num_arguments++;
+			}
+	}
+	|
+	command WORD
+	{
+		//This is an argument. Add it to the current command's arguments list, if space permits
+			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;
+			
+			if(numArgs < MAX_ARGUMENTS) {
+				CMD_TABLE[COMMAND_COUNT].args[numArgs] = $2;
+				CMD_TABLE[COMMAND_COUNT].num_arguments++;
+			}		
 	}
 	;
 
