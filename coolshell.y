@@ -158,7 +158,7 @@ metacharacter:
 	;
 
 setalias:
-	ALIAS WORD WORD
+	ALIAS
 	{
 		CMD_TABLE[COMMAND_COUNT].commandname="alias";
 		CMD_TABLE[COMMAND_COUNT].command_code = CMD_ALIAS;
