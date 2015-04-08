@@ -118,12 +118,15 @@ extern int yydebug;
     UNSET_ENVIRONMENT = 262,
     PRINT_ENVIRONMENT = 263,
     LESSTHAN = 264,
-    GREATERTHAN = 265,
-    QUOT = 266,
-    AMP = 267,
-    BACKSLASH = 268,
-    PIPE = 269,
-    WORD = 270
+    ALIAS = 265,
+    GREATERTHAN = 266,
+    QUOT = 267,
+    AMP = 268,
+    BACKSLASH = 269,
+    PIPE = 270,
+    UNALIAS = 271,
+    PRINTALIAS = 272,
+    WORD = 273
   };
 #endif
 /* Tokens.  */
@@ -134,12 +137,15 @@ extern int yydebug;
 #define UNSET_ENVIRONMENT 262
 #define PRINT_ENVIRONMENT 263
 #define LESSTHAN 264
-#define GREATERTHAN 265
-#define QUOT 266
-#define AMP 267
-#define BACKSLASH 268
-#define PIPE 269
-#define WORD 270
+#define ALIAS 265
+#define GREATERTHAN 266
+#define QUOT 267
+#define AMP 268
+#define BACKSLASH 269
+#define PIPE 270
+#define UNALIAS 271
+#define PRINTALIAS 272
+#define WORD 273
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -151,7 +157,7 @@ union YYSTYPE
 	int number;
 	char *string;
 
-#line 155 "y.tab.c" /* yacc.c:355  */
+#line 161 "y.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -166,7 +172,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 170 "y.tab.c" /* yacc.c:358  */
+#line 176 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -408,21 +414,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   18
+#define YYLAST   22
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  16
+#define YYNTOKENS  19
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  11
+#define YYNNTS  13
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  26
+#define YYNRULES  30
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  30
+#define YYNSTATES  36
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   270
+#define YYMAXUTOK   273
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -458,7 +464,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15
+      15,    16,    17,    18
 };
 
 #if YYDEBUG
@@ -466,8 +472,9 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    25,    25,    26,    29,    31,    33,    35,    37,    39,
-      41,    43,    47,    55,    65,    71,    78,    85,    92,    99,
-     104,   109,   114,   119,   124,   131,   136
+      41,    43,    45,    47,    51,    59,    69,    75,    82,    89,
+      96,   103,   108,   113,   118,   123,   128,   135,   142,   149,
+     154
 };
 #endif
 
@@ -477,10 +484,11 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "BYE", "CD", "PWD", "SET_ENVIRONMENT",
-  "UNSET_ENVIRONMENT", "PRINT_ENVIRONMENT", "LESSTHAN", "GREATERTHAN",
-  "QUOT", "AMP", "BACKSLASH", "PIPE", "WORD", "$accept", "commands",
-  "command", "kill_self", "get_path", "change_directory", "setenv",
-  "unsetenv", "printenv", "metacharacter", "nonsense", YY_NULLPTR
+  "UNSET_ENVIRONMENT", "PRINT_ENVIRONMENT", "LESSTHAN", "ALIAS",
+  "GREATERTHAN", "QUOT", "AMP", "BACKSLASH", "PIPE", "UNALIAS",
+  "PRINTALIAS", "WORD", "$accept", "commands", "command", "kill_self",
+  "get_path", "change_directory", "setenv", "unsetenv", "printenv",
+  "metacharacter", "setalias", "printalias", "nonsense", YY_NULLPTR
 };
 #endif
 
@@ -490,14 +498,14 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270
+     265,   266,   267,   268,   269,   270,   271,   272,   273
 };
 # endif
 
-#define YYPACT_NINF -15
+#define YYPACT_NINF -18
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-15)))
+  (!!((Yystate) == (-18)))
 
 #define YYTABLE_NINF -1
 
@@ -508,9 +516,10 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -15,     0,   -15,   -15,   -14,   -15,   -13,     1,   -15,   -15,
-     -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,
-     -15,   -15,   -15,   -15,     2,   -15,     3,   -15,   -15,   -15
+     -18,     0,   -18,   -18,   -17,   -18,   -16,    -2,   -18,   -18,
+       1,   -18,   -18,   -18,   -18,   -18,   -18,   -18,   -18,   -18,
+     -18,   -18,   -18,   -18,   -18,   -18,   -18,   -18,     2,   -18,
+       3,   -18,     4,   -18,   -18,   -18
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -518,23 +527,24 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       2,     0,     1,    12,    14,    13,     0,     0,    18,    19,
-      20,    21,    22,    23,    24,    25,     3,     4,     5,     6,
-       8,     9,    10,    11,     7,    15,     0,    17,    26,    16
+       2,     0,     1,    14,    16,    15,     0,     0,    20,    21,
+       0,    22,    23,    24,    25,    26,    28,    29,     3,     4,
+       5,     6,     8,     9,    10,    11,    12,    13,     7,    17,
+       0,    19,     0,    30,    18,    27
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,
-     -15
+     -18,   -18,   -18,   -18,   -18,   -18,   -18,   -18,   -18,   -18,
+     -18,   -18,   -18
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,    16,    17,    18,    19,    20,    21,    22,    23,
-      24
+      -1,     1,    18,    19,    20,    21,    22,    23,    24,    25,
+      26,    27,    28
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -542,39 +552,44 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       2,    25,    26,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    13,    14,    15,    27,    28,    29
+       2,    29,    30,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    13,    14,    15,    31,    16,    17,    32,
+      33,    34,    35
 };
 
 static const yytype_uint8 yycheck[] =
 {
-       0,    15,    15,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    13,    14,    15,    15,    15,    15
+       0,    18,    18,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    13,    14,    15,    18,    17,    18,    18,
+      18,    18,    18
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    17,     0,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    13,    14,    15,    18,    19,    20,    21,
-      22,    23,    24,    25,    26,    15,    15,    15,    15,    15
+       0,    20,     0,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    13,    14,    15,    17,    18,    21,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    18,
+      18,    18,    18,    18,    18,    18
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    16,    17,    17,    18,    18,    18,    18,    18,    18,
-      18,    18,    19,    20,    21,    21,    22,    23,    24,    25,
-      25,    25,    25,    25,    25,    26,    26
+       0,    19,    20,    20,    21,    21,    21,    21,    21,    21,
+      21,    21,    21,    21,    22,    23,    24,    24,    25,    26,
+      27,    28,    28,    28,    28,    28,    28,    29,    30,    31,
+      31
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     2,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     2,     3,     2,     1,     1,
-       1,     1,     1,     1,     1,     1,     2
+       1,     1,     1,     1,     1,     1,     1,     2,     3,     2,
+       1,     1,     1,     1,     1,     1,     1,     3,     1,     1,
+       2
 };
 
 
@@ -1250,132 +1265,148 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 12:
-#line 48 "coolshell.y" /* yacc.c:1646  */
+        case 14:
+#line 52 "coolshell.y" /* yacc.c:1646  */
     {
 		printf("Goodbye!\n");
 		exit(0);
 	}
-#line 1260 "y.tab.c" /* yacc.c:1646  */
+#line 1275 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 13:
-#line 56 "coolshell.y" /* yacc.c:1646  */
+  case 15:
+#line 60 "coolshell.y" /* yacc.c:1646  */
     {
 		char cwd[1024];
 		getcwd(cwd, sizeof(cwd));
 		printf("%s\n", cwd);
 	}
-#line 1270 "y.tab.c" /* yacc.c:1646  */
+#line 1285 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 14:
-#line 66 "coolshell.y" /* yacc.c:1646  */
+  case 16:
+#line 70 "coolshell.y" /* yacc.c:1646  */
     {
 	char* home = getenv("HOME");
 	chdir(home);
 	}
-#line 1279 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 15:
-#line 72 "coolshell.y" /* yacc.c:1646  */
-    {
-		if( -1 == chdir((yyvsp[0].string))) printf("Invalid directory: %s\n", (yyvsp[0].string));
-	}
-#line 1287 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 16:
-#line 79 "coolshell.y" /* yacc.c:1646  */
-    {
-		printf("%d\n",set_env_var((yyvsp[-1].string), (yyvsp[0].string)));
-	}
-#line 1295 "y.tab.c" /* yacc.c:1646  */
+#line 1294 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 86 "coolshell.y" /* yacc.c:1646  */
+#line 76 "coolshell.y" /* yacc.c:1646  */
     {
-		printf("%d\n", unset_env_var((yyvsp[0].string)));
+		if( -1 == chdir((yyvsp[0].string))) printf("Invalid directory: %s\n", (yyvsp[0].string));
 	}
-#line 1303 "y.tab.c" /* yacc.c:1646  */
+#line 1302 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 93 "coolshell.y" /* yacc.c:1646  */
+#line 83 "coolshell.y" /* yacc.c:1646  */
     {
-		print_env_var();
+		printf("%d\n",set_env_var((yyvsp[-1].string), (yyvsp[0].string)));
 	}
-#line 1311 "y.tab.c" /* yacc.c:1646  */
+#line 1310 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 100 "coolshell.y" /* yacc.c:1646  */
+#line 90 "coolshell.y" /* yacc.c:1646  */
     {
-		printf("lessthan");
+		printf("%d\n", unset_env_var((yyvsp[0].string)));
 	}
-#line 1319 "y.tab.c" /* yacc.c:1646  */
+#line 1318 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 105 "coolshell.y" /* yacc.c:1646  */
+#line 97 "coolshell.y" /* yacc.c:1646  */
     {
-		printf("greaterthan");
+		print_env_var();
 	}
-#line 1327 "y.tab.c" /* yacc.c:1646  */
+#line 1326 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 110 "coolshell.y" /* yacc.c:1646  */
+#line 104 "coolshell.y" /* yacc.c:1646  */
     {
-		printf("quotationmark");
+		printf("lessthan");
 	}
-#line 1335 "y.tab.c" /* yacc.c:1646  */
+#line 1334 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 115 "coolshell.y" /* yacc.c:1646  */
+#line 109 "coolshell.y" /* yacc.c:1646  */
     {
-		printf("ampersand");
+		printf("greaterthan");
 	}
-#line 1343 "y.tab.c" /* yacc.c:1646  */
+#line 1342 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 120 "coolshell.y" /* yacc.c:1646  */
+#line 114 "coolshell.y" /* yacc.c:1646  */
     {
-		printf("backslash");
+		printf("quotationmark");
 	}
-#line 1351 "y.tab.c" /* yacc.c:1646  */
+#line 1350 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 125 "coolshell.y" /* yacc.c:1646  */
+#line 119 "coolshell.y" /* yacc.c:1646  */
     {
-		printf("pipe");
+		printf("ampersand");
 	}
-#line 1359 "y.tab.c" /* yacc.c:1646  */
+#line 1358 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 132 "coolshell.y" /* yacc.c:1646  */
+#line 124 "coolshell.y" /* yacc.c:1646  */
     {
-	printf("I do not recognize that command.\n");
+		printf("backslash");
 	}
-#line 1367 "y.tab.c" /* yacc.c:1646  */
+#line 1366 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 137 "coolshell.y" /* yacc.c:1646  */
+#line 129 "coolshell.y" /* yacc.c:1646  */
+    {
+		printf("pipe");
+	}
+#line 1374 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 27:
+#line 136 "coolshell.y" /* yacc.c:1646  */
+    {
+		setalias((yyvsp[-1].string), (yyvsp[0].string));
+	}
+#line 1382 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 28:
+#line 143 "coolshell.y" /* yacc.c:1646  */
+    {
+		print_aliases();
+	}
+#line 1390 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 150 "coolshell.y" /* yacc.c:1646  */
+    {
+	printf("I do not recognize that command.\n");
+	}
+#line 1398 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 155 "coolshell.y" /* yacc.c:1646  */
     {
 	printf("What?\n");
 	}
-#line 1375 "y.tab.c" /* yacc.c:1646  */
+#line 1406 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1379 "y.tab.c" /* yacc.c:1646  */
+#line 1410 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

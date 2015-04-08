@@ -9,6 +9,7 @@
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
+extern char **environ;
 
 
 /* Definitions */
@@ -16,12 +17,24 @@ extern char* yytext;
 #define SHELL_PROMPT	" (﻿ ͡° ͜ʖ ͡°) ~~ "
 
 int set_env_var(char *name, char *value) {
+	return setenv(name, value, 1);
+}
+
+int unset_env_var(char *name) {
+	return unsetenv(name);
+}
+
+int setalias(char *name, char *value) {
+	alias newalias;
+	newalias.aliasname = name;
+	newalias.aliascontent = value;
+
 	int indexOf = -1;
 
 	int i = 0;
 	//Find index of variable, if it exists
-	for(i = 0; i < env_var_count; i++) {
-		if(strcmp(name, env_vars[i]) == 0) {
+	for(i = 0; i < alias_count; i++) {
+		if(strcmp(name, aliases[i].aliasname) == 0) {
 			//Variable already exists, set value
 			indexOf = i;
 			break;
@@ -31,46 +44,39 @@ int set_env_var(char *name, char *value) {
 	//Does the variable already exist?
 	if(indexOf != -1) {
 		//Modify existing variable
-		env_vars_values[indexOf] = value;
+		aliases[i] = newalias;
 		return;
 	} else {
 		//Create new variable if space permits
-		if(env_var_count < ENV_MAXSIZE) {
+		if(alias_count < ALIASES_MAXSIZE) {
 			//There's space. Fill the first available space
-			env_vars[env_var_count] = name;
-			env_vars_values[env_var_count] = value;
-			env_var_count++;
+			aliases[i] = newalias;
+			alias_count++;
 			return OK;
 		} else return ERROR_NO_SPACE;
 	}
+
 }
 
-int unset_env_var(char *name) {
+int removealias(char *name) {
+
+}
+
+void print_aliases(void) {
 	int i = 0;
-	//Remove value from the list if variable exists
-	for( i = 0; i < env_var_count; i++ ) {
-		if(strcmp(name, env_vars[i]) == 0) {
-			env_vars_values[i] = NULL;
-			return OK;
-		}
+	for(i = 0; i < alias_count; i++) {
+		printf("%s : %s\n", aliases[i].aliasname, aliases[i].aliascontent);
 	}
-
-	//If it was not found return NOT FOUND
-	return ERROR_NOT_FOUND;
-
 }
 
 void print_env_var(void) {
 	int i = 0;
-	for( i = 0; i < env_var_count; i++) {
-		printf("%s: %s\n", env_vars[i], env_vars_values[i]);
-	}
-	return;
-}
+	while(environ[i]) {
+		printf("%s\n", environ[i++]);
+	}}
 
 void shellinit(void) {
-	env_var_count = 0;
-	set_env_var("PATH", getenv("PATH"));
+	alias_count = 0;
 
 }
 

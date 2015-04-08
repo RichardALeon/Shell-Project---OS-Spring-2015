@@ -10,6 +10,9 @@ bye		return BYE;
 cd		return CD;
 pwd		return PWD;
 setenv	return SET_ENVIRONMENT;
+alias	return ALIAS;
+printalias	return PRINTALIAS;
+unalias	return UNALIAS;
 unsetenv return UNSET_ENVIRONMENT;
 printenv return PRINT_ENVIRONMENT;
 [a-zA-Z0-9\.\/-]+ 	yylval.string=strdup(yytext); return WORD;
@@ -20,7 +23,7 @@ printenv return PRINT_ENVIRONMENT;
 \"	return QUOT;
 "\\"	return BACKSLASH;
 "&"	return AMP;
-\[<>|&\"] /*ignore escape characters*/
+"\\"[<>|&\"] /*ignore escape characters*/
 
 
 

@@ -52,12 +52,15 @@ extern int yydebug;
     UNSET_ENVIRONMENT = 262,
     PRINT_ENVIRONMENT = 263,
     LESSTHAN = 264,
-    GREATERTHAN = 265,
-    QUOT = 266,
-    AMP = 267,
-    BACKSLASH = 268,
-    PIPE = 269,
-    WORD = 270
+    ALIAS = 265,
+    GREATERTHAN = 266,
+    QUOT = 267,
+    AMP = 268,
+    BACKSLASH = 269,
+    PIPE = 270,
+    UNALIAS = 271,
+    PRINTALIAS = 272,
+    WORD = 273
   };
 #endif
 /* Tokens.  */
@@ -68,12 +71,15 @@ extern int yydebug;
 #define UNSET_ENVIRONMENT 262
 #define PRINT_ENVIRONMENT 263
 #define LESSTHAN 264
-#define GREATERTHAN 265
-#define QUOT 266
-#define AMP 267
-#define BACKSLASH 268
-#define PIPE 269
-#define WORD 270
+#define ALIAS 265
+#define GREATERTHAN 266
+#define QUOT 267
+#define AMP 268
+#define BACKSLASH 269
+#define PIPE 270
+#define UNALIAS 271
+#define PRINTALIAS 272
+#define WORD 273
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -85,7 +91,7 @@ union YYSTYPE
 	int number;
 	char *string;
 
-#line 89 "y.tab.h" /* yacc.c:1909  */
+#line 95 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

@@ -18,7 +18,7 @@
 	char *string;
 }
 
-%token <number> BYE CD PWD SET_ENVIRONMENT UNSET_ENVIRONMENT PRINT_ENVIRONMENT LESSTHAN GREATERTHAN QUOT AMP BACKSLASH PIPE
+%token <number> BYE CD PWD SET_ENVIRONMENT UNSET_ENVIRONMENT PRINT_ENVIRONMENT LESSTHAN ALIAS GREATERTHAN QUOT AMP BACKSLASH PIPE UNALIAS PRINTALIAS
 %token <string> WORD
 
 %%
@@ -41,6 +41,10 @@ command:
 	printenv
 	|
 	metacharacter
+	|
+	setalias
+	|
+	printalias
 	;
 
 kill_self:
@@ -124,6 +128,20 @@ metacharacter:
 	PIPE
 	{
 		printf("pipe");
+	}
+	;
+
+setalias:
+	ALIAS WORD WORD
+	{
+		setalias($2, $3);
+	}
+	;
+
+printalias:
+	PRINTALIAS
+	{
+		print_aliases();
 	}
 	;
 
