@@ -473,8 +473,8 @@ static const yytype_uint8 yyrline[] =
 {
        0,    25,    25,    26,    29,    31,    33,    35,    37,    39,
       41,    43,    45,    47,    49,    53,    61,    75,    85,    98,
-     109,   120,   129,   134,   139,   144,   149,   154,   161,   170,
-     179,   188,   206,   217
+     109,   120,   129,   134,   139,   144,   149,   154,   161,   172,
+     181,   190,   208,   219
 };
 #endif
 
@@ -1402,33 +1402,35 @@ yyreduce:
     {
 		CMD_TABLE[COMMAND_COUNT].commandname="alias";
 		CMD_TABLE[COMMAND_COUNT].command_code = CMD_ALIAS;
-		//setalias($2, $3);
+		CMD_TABLE[COMMAND_COUNT].args[0] = (yyvsp[-1].string);
+		CMD_TABLE[COMMAND_COUNT].args[1] = (yyvsp[0].string);
+		CMD_TABLE[COMMAND_COUNT].num_arguments += 2;
 	}
-#line 1408 "y.tab.c" /* yacc.c:1646  */
+#line 1410 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 171 "coolshell.y" /* yacc.c:1646  */
+#line 173 "coolshell.y" /* yacc.c:1646  */
     {
 		//removealias($2);
 		CMD_TABLE[COMMAND_COUNT].commandname="unalias";
 		CMD_TABLE[COMMAND_COUNT].command_code = CMD_UNALIAS;
 	}
-#line 1418 "y.tab.c" /* yacc.c:1646  */
+#line 1420 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 180 "coolshell.y" /* yacc.c:1646  */
+#line 182 "coolshell.y" /* yacc.c:1646  */
     {
 		//print_aliases();
 		CMD_TABLE[COMMAND_COUNT].commandname="printalias";
 		CMD_TABLE[COMMAND_COUNT].command_code = CMD_PRINTALIAS;
 	}
-#line 1428 "y.tab.c" /* yacc.c:1646  */
+#line 1430 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 189 "coolshell.y" /* yacc.c:1646  */
+#line 191 "coolshell.y" /* yacc.c:1646  */
     {
 		//We must check if the entered WORD is an external command (or alias, but that won't be handled here)
 		if(externcommand == NULL) {
@@ -1445,11 +1447,11 @@ yyreduce:
 			}
 		}
 	}
-#line 1449 "y.tab.c" /* yacc.c:1646  */
+#line 1451 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 207 "coolshell.y" /* yacc.c:1646  */
+#line 209 "coolshell.y" /* yacc.c:1646  */
     {
 		//This is an argument. Add it to the current command's arguments list, if space permits
 			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;
@@ -1459,11 +1461,11 @@ yyreduce:
 				CMD_TABLE[COMMAND_COUNT].num_arguments++;
 			}
 	}
-#line 1463 "y.tab.c" /* yacc.c:1646  */
+#line 1465 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 218 "coolshell.y" /* yacc.c:1646  */
+#line 220 "coolshell.y" /* yacc.c:1646  */
     {
 		//This is an argument. Add it to the current command's arguments list, if space permits
 			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;
@@ -1473,11 +1475,11 @@ yyreduce:
 				CMD_TABLE[COMMAND_COUNT].num_arguments++;
 			}		
 	}
-#line 1477 "y.tab.c" /* yacc.c:1646  */
+#line 1479 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1481 "y.tab.c" /* yacc.c:1646  */
+#line 1483 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

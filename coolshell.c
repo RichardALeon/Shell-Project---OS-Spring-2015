@@ -24,6 +24,24 @@ int unset_env_var(char *name) {
 	return unsetenv(name);
 }
 
+int is_alias(char *name) {
+	//Returns the index of the alias if the entered string is an alias. Otherwise returns -1
+
+	int indexOf = -1;
+
+	int i = 0;
+	//Find index of variable, if it exists
+	for(i = 0; i < alias_count; i++) {
+		if(strcmp(name, aliases[i].aliasname) == 0) {
+			//Variable already exists, set value
+			indexOf = i;
+			break;
+		}
+	}
+
+	return indexOf;
+}
+
 int setalias(char *name, char *value) {
 	alias newalias;
 	newalias.aliasname = name;
@@ -105,7 +123,7 @@ void execute_command(void) {
 	* If it is an ALIAS, edit the current command to trace back to the content of the ALIAS and re-execute.
 	* If it is an EXTERNAL command, carry out the necessary work to execute it.
 	*/
-	
+
 	int currcmd = COMMAND_COUNT;
 
 	if(externcommand == NULL) {
@@ -157,7 +175,15 @@ void execute_command(void) {
 		/*
 		* HANDLING ALIASES AND SYSTEM COMMANDS
 		*/
-		printf("Command to execute: %s", CMD_TABLE[currcmd].commandname);
+		printf("Command to execute: %s\n", CMD_TABLE[currcmd].commandname);
+		int aliasindex = is_alias(CMD_TABLE[currcmd].commandname);
+		if(aliasindex != -1 ) {
+			printf("Alias found!\n");
+			externcommand = NULL;
+			parse_scan_string(aliases[aliasindex].aliascontent);
+			execute_command();
+		}
+
 	}
 
 	// RESET externcommand AND INCREMENT COMMAND_COUNT

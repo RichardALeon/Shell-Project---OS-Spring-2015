@@ -11,7 +11,6 @@
 ^pwd	return PWD;
 ^setenv	return SET_ENVIRONMENT;
 ^alias	return ALIAS;
-^printalias	return PRINTALIAS;
 ^unalias	return UNALIAS;
 ^unsetenv return UNSET_ENVIRONMENT;
 ^printenv return PRINT_ENVIRONMENT;
@@ -41,4 +40,10 @@
 int yywrap(void)
 {
 	return 1;
+}
+
+void parse_scan_string(char* str) {
+	yy_scan_string(str);
+	yyparse();
+	yylex_destroy();
 }
