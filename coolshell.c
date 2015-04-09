@@ -4,6 +4,8 @@
 #include "coolshellincludes.h"
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <unistd.h>
 
 /* Extern */
 extern int yylex();
@@ -175,16 +177,74 @@ void execute_command(void) {
 		/*
 		* HANDLING ALIASES AND SYSTEM COMMANDS
 		*/
-		printf("Command to execute: %s\n", CMD_TABLE[currcmd].commandname);
+
 		int aliasindex = is_alias(CMD_TABLE[currcmd].commandname);
 		if(aliasindex != -1 ) {
+			//ALIAS
 			printf("Alias found!\n");
 			externcommand = NULL;
 			parse_scan_string(aliases[aliasindex].aliascontent);
 			execute_command();
-		}
+		} else {
+			//EXTERNAL COMMAND
+			//First, fork.
+			//Second, We need to make a string that contains all possible folders in PATH, to check for the command
 
-	}
+				pid_t childPid = fork();
+				int status;
+				int success = -1;
+
+				if(childPid < 0) {
+					exit(1);
+				}
+				else if (childPid == 0) {
+					char temp[256];
+		 			char* allpaths = strcpy(temp,getenv("PATH"));
+					char* token = strtok(allpaths,":");
+
+					while (token) {
+					    //Try to execute the command
+						char path[255];
+
+						strcpy( path, token );
+						strcat( path, "/");
+						strcat(path, CMD_TABLE[currcmd].commandname);
+						char *commandarray[CMD_TABLE[currcmd].num_arguments + 2];
+						commandarray[0] = path;
+						commandarray[CMD_TABLE[currcmd].num_arguments + 1] = (char*)NULL;
+						
+						int i = 0;
+						for(i = 0; i < CMD_TABLE[currcmd].num_arguments; i++) {
+							commandarray[i + 1] = CMD_TABLE[currcmd].args[i];
+						}
+
+						success = execv(path, commandarray);
+						_exit(0);
+						if(success == -1) {
+							token = strtok(NULL, ":");
+							continue;
+						} else { 
+							//_exit(0);
+
+							while(waitpid(childPid, &status, 0) == -1) {
+								if (errno != EINTR) {
+									status = -1;
+									break;					
+								}
+
+							break;
+
+					}
+						}
+					}
+					if(success == -1) printf("Oh no! :( Command not found: %s\n", CMD_TABLE[currcmd].commandname );
+
+				}
+				
+			}
+
+
+		}
 
 	// RESET externcommand AND INCREMENT COMMAND_COUNT
 		externcommand = NULL;

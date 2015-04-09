@@ -1902,5 +1902,4 @@ void parse_scan_string(char* str) {
 	yy_scan_string(str);
 	yyparse();
 	yylex_destroy();
-	printf("gone here\n");
 }
