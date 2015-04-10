@@ -28,6 +28,7 @@ alias aliases[ALIASES_MAXSIZE];
 #define MAX_ARGUMENTS 5
 #define MAX_COMMANDS 100
 char *externcommand;
+char *alias_root;
 int COMMAND_COUNT;
 
 typedef struct com {

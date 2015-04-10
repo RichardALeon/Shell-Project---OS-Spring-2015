@@ -112,6 +112,7 @@ void print_env_var(void) {
 
 void shellinit(void) {
 	alias_count = 0;
+	alias_root = NULL;
 	COMMAND_COUNT = 0;
 	externcommand = NULL;
 }
@@ -132,6 +133,8 @@ void execute_command(void) {
 		/*
 		* HANDLING BUILT IN COMMANDS
 		*/
+		alias_root = NULL;
+
 		switch(CMD_TABLE[currcmd].command_code) {
 			case CMD_CD_HOME: {
 				char* home = getenv("HOME");
@@ -179,17 +182,35 @@ void execute_command(void) {
 		*/
 
 		int aliasindex = is_alias(CMD_TABLE[currcmd].commandname);
+
 		if(aliasindex != -1 ) {
 			//ALIAS
-			printf("Alias found!\n");
+			//printf("Alias found!\n");
 			externcommand = NULL;
-			parse_scan_string(aliases[aliasindex].aliascontent);
-			execute_command();
+
+			//HANDLE INFINITE ALIAS LOOPS
+			if(alias_root == NULL) {
+				//Assign the first alias to be encountered as the "root alias"
+				alias_root = aliases[aliasindex].aliasname;
+			}
+
+			//Check any other aliases to see if they point back to the first. It will only detect the loop once the alias referring back to the root is executed.
+			if(strcmp(alias_root, aliases[aliasindex].aliascontent) == 0) {
+				//Root alias name and content of current alias are the same. LOOP
+				printf("ALIAS LOOP FOUND. Terminating\n");
+				return;
+			} else {
+				//No alias loop found. Trace the alias to a command
+				parse_scan_string(aliases[aliasindex].aliascontent);
+				execute_command();
+			}
+
+			
 		} else {
 			//EXTERNAL COMMAND
 			//First, fork.
 			//Second, We need to make a string that contains all possible folders in PATH, to check for the command
-
+				alias_root = NULL;
 				pid_t childPid = fork();
 				int status;
 				int success = -1;
@@ -260,6 +281,7 @@ void execute_command(void) {
 
 	// RESET externcommand AND INCREMENT COMMAND_COUNT
 		externcommand = NULL;
+		//alias_root = NULL;
 		COMMAND_COUNT = (COMMAND_COUNT + 1) % 100;
 }
 
