@@ -194,6 +194,13 @@ void execute_command(void) {
 				int status;
 				int success = -1;
 
+					while(waitpid(childPid, &status, 0) == -1) {
+						if (errno != EINTR) {
+							status = -1;
+							break;
+						}
+					}				
+
 				if(childPid < 0) {
 					exit(1);
 				}
@@ -201,50 +208,55 @@ void execute_command(void) {
 					char temp[256];
 		 			char* allpaths = strcpy(temp,getenv("PATH"));
 					char* token = strtok(allpaths,":");
+					char* compare = "/.";
 
 					while (token) {
 					    //Try to execute the command
 						char path[255];
 
-						strcpy( path, token );
-						strcat( path, "/");
-						strcat(path, CMD_TABLE[currcmd].commandname);
+						if( CMD_TABLE[currcmd].commandname[0] == compare[0] || CMD_TABLE[currcmd].commandname[0] == compare[1]) {
+							//The user entered a directory with the command (hopefully). Set path to be this command instead
+							strcpy( path, CMD_TABLE[currcmd].commandname );
+						}
+						else {
+							//Make a string that contains the path (that the command might be in)
+							strcpy( path, token );
+							strcat( path, "/");
+							//Append the command name to the path
+							strcat(path, CMD_TABLE[currcmd].commandname);
+						}
+
+						//Create a NULL-terminating array to use for execv command
 						char *commandarray[CMD_TABLE[currcmd].num_arguments + 2];
 						commandarray[0] = path;
 						commandarray[CMD_TABLE[currcmd].num_arguments + 1] = (char*)NULL;
 						
+						//Add the arguments to the array
 						int i = 0;
 						for(i = 0; i < CMD_TABLE[currcmd].num_arguments; i++) {
 							commandarray[i + 1] = CMD_TABLE[currcmd].args[i];
 						}
 
-						success = execv(path, commandarray);
-						_exit(0);
-						if(success == -1) {
+						//Try to execute the command. If it fails, go through the loop again with a new path
+						if(execv(path, commandarray) == -1) {
 							token = strtok(NULL, ":");
 							continue;
 						} else { 
-							//_exit(0);
-
-							while(waitpid(childPid, &status, 0) == -1) {
-								if (errno != EINTR) {
-									status = -1;
-									break;					
-								}
-
-							break;
-
+							_exit(0); 
+							success = 1;
+							break; }						
 					}
-						}
-					}
-					if(success == -1) printf("Oh no! :( Command not found: %s\n", CMD_TABLE[currcmd].commandname );
 
+					if(success == -1) {
+						printf("Oh no! :( Command not found: %s\n", CMD_TABLE[currcmd].commandname );
+						_exit(0);
+					}
 				}
-				
-			}
 
 
 		}
+
+	}
 
 	// RESET externcommand AND INCREMENT COMMAND_COUNT
 		externcommand = NULL;
