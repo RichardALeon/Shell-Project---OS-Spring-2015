@@ -30,13 +30,20 @@ alias aliases[ALIASES_MAXSIZE];
 char *externcommand;
 char *alias_root;
 int COMMAND_COUNT;
+int num_commands_ahead;
 
 typedef struct com {
 	char *commandname;
 	int command_code;
 	int num_arguments;
 	char *args[MAX_ARGUMENTS];
+	char *in_file;
+	char *out_file;
+	int is_external;
+	int pipe_out;
 } COMMAND;
+
+int pipes[2];
 
 COMMAND CMD_TABLE[MAX_COMMANDS];
 

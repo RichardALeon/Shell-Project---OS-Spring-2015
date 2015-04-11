@@ -111,6 +111,7 @@ void print_env_var(void) {
 	}}
 
 void shellinit(void) {
+	num_commands_ahead = 0;
 	alias_count = 0;
 	alias_root = NULL;
 	COMMAND_COUNT = 0;
@@ -127,9 +128,10 @@ void execute_command(void) {
 	* If it is an EXTERNAL command, carry out the necessary work to execute it.
 	*/
 
+	COMMAND_COUNT = (COMMAND_COUNT - num_commands_ahead) % MAX_COMMANDS;
 	int currcmd = COMMAND_COUNT;
 
-	if(externcommand == NULL) {
+	if(CMD_TABLE[currcmd].is_external == 0) {
 		/*
 		* HANDLING BUILT IN COMMANDS
 		*/
@@ -280,9 +282,10 @@ void execute_command(void) {
 	}
 
 	// RESET externcommand AND INCREMENT COMMAND_COUNT
-		externcommand = NULL;
+		//externcommand = NULL;
 		//alias_root = NULL;
 		COMMAND_COUNT = (COMMAND_COUNT + 1) % 100;
+		CMD_TABLE[COMMAND_COUNT].is_external = 0;
 }
 
 int main(void) {

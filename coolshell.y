@@ -40,13 +40,15 @@ command:
 	|
 	printenv
 	|
-	metacharacter
-	|
 	setalias
 	|
 	printalias
 	|
 	removealias
+	|
+	ioredir
+	|
+	arg_pipe
 	;
 
 kill_self:
@@ -125,37 +127,24 @@ printenv:
 	}
 	;
 
-metacharacter:
-	LESSTHAN
+ioredir:
+	arg_pipe argument
 	{
-		
-	} 
-	|
-	GREATERTHAN
-	{
-		
-	}
-	|
-	QUOT
-	{
-		
-	}
-	|
-	AMP
-	{
-
-	}
-	|
-	BACKSLASH
-	{
-
-	}
-	|
-	PIPE
-	{
-		
+	//Don't do anything right now
 	}
 	;
+
+arg_pipe:
+	command PIPE
+	{
+		CMD_TABLE[COMMAND_COUNT].pipe_out = 1;
+		num_commands_ahead++;
+		COMMAND_COUNT++;
+		COMMAND_COUNT % MAX_COMMANDS;
+		//externcommand = NULL;
+	}
+	;
+
 
 setalias:
 	ALIAS WORD WORD
@@ -190,10 +179,11 @@ argument:
 	WORD
 	{
 		//We must check if the entered WORD is an external command (or alias, but that won't be handled here)
-		if(externcommand == NULL) {
+		if(CMD_TABLE[COMMAND_COUNT].is_external == 0) {
 		//This is a command (or an alias), not an argument. make a new command
-			externcommand = $1;
-			CMD_TABLE[COMMAND_COUNT].commandname = externcommand;
+			CMD_TABLE[COMMAND_COUNT].is_external = 1;
+			//externcommand = $1;
+			CMD_TABLE[COMMAND_COUNT].commandname = $1;
 		} else {
 		//This is an argument. Add it to the current command's arguments list, if space permits
 			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;

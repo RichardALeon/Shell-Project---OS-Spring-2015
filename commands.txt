@@ -1,0 +1,5 @@
+ls -l
+cd
+pwd
+echo "foo"
+bye
