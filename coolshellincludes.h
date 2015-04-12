@@ -26,7 +26,7 @@ alias aliases[ALIASES_MAXSIZE];
 
 /* COMMAND AND ARGUMENT STUCTURES */
 #define MAX_ARGUMENTS 5
-#define MAX_COMMANDS 100
+#define MAX_COMMANDS 500
 char *externcommand;
 char *alias_root;
 int COMMAND_COUNT;
@@ -39,11 +39,12 @@ typedef struct com {
 	char *args[MAX_ARGUMENTS];
 	char *in_file;
 	char *out_file;
+	int append;
 	int is_external;
 	int pipe_out;
 } COMMAND;
 
-int pipes[2];
+int ignore_EOF;
 
 COMMAND CMD_TABLE[MAX_COMMANDS];
 

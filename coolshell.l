@@ -2,11 +2,13 @@
 %{
 	#include <stdio.h>
 	#include "y.tab.h"
+	#include "coolshellincludes.h"
 %}
 
 %%
 	/* rules go here */
 ^bye	return BYE;
+<<EOF>> {if(ignore_EOF == 0) return BYE; else return 0;}
 ^cd		return CD;
 ^pwd	return PWD;
 ^setenv	return SET_ENVIRONMENT;
@@ -14,6 +16,13 @@
 ^unalias	return UNALIAS;
 ^unsetenv return UNSET_ENVIRONMENT;
 ^printenv return PRINT_ENVIRONMENT;
+"${"[a-zA-z0-9]+"}"		{
+						char substr[yyleng-2];
+						strncpy(substr, yytext + 2, (yyleng - 3));
+						substr[yyleng - 3] = '\0';
+						yylval.string=strdup(substr);
+						//return VARIABLE;
+						}
 [a-zA-Z0-9\.\/-]+ 	yylval.string=strdup(yytext); return WORD;
 \"(\\.|[^"\n])*\"	{
 						char substr[yyleng - 1];

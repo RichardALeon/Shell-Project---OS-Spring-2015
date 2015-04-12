@@ -19,7 +19,7 @@
 }
 
 %token <number> BYE CD PWD SET_ENVIRONMENT UNSET_ENVIRONMENT PRINT_ENVIRONMENT LESSTHAN ALIAS GREATERTHAN QUOT AMP BACKSLASH PIPE UNALIAS PRINTALIAS
-%token <string> WORD
+%token <string> WORD VARIABLE
 
 %%
 commands: /* empty */
@@ -47,8 +47,6 @@ command:
 	removealias
 	|
 	ioredir
-	|
-	arg_pipe
 	;
 
 kill_self:
@@ -71,7 +69,6 @@ get_path:
 		CMD_TABLE[COMMAND_COUNT].command_code = CMD_PWD;
 	}
 	;
-
 
 change_directory:
 	CD
@@ -128,20 +125,23 @@ printenv:
 	;
 
 ioredir:
-	arg_pipe argument
+	GREATERTHAN WORD 
 	{
-	//Don't do anything right now
+		printf("output redirect to file %s\n", $2);
+		CMD_TABLE[COMMAND_COUNT].out_file = $2;
 	}
-	;
-
-arg_pipe:
-	command PIPE
+	|
+	LESSTHAN WORD
 	{
-		CMD_TABLE[COMMAND_COUNT].pipe_out = 1;
-		num_commands_ahead++;
-		COMMAND_COUNT++;
-		COMMAND_COUNT % MAX_COMMANDS;
-		//externcommand = NULL;
+		printf("input redirect from file %s\n", $2);
+		CMD_TABLE[COMMAND_COUNT].in_file = $2;
+	}
+	|
+	GREATERTHAN GREATERTHAN WORD
+	{
+		printf("output redirect to file (append) %s\n", $3);
+		CMD_TABLE[COMMAND_COUNT].out_file = $3;
+		CMD_TABLE[COMMAND_COUNT].append = 1;
 	}
 	;
 
@@ -215,6 +215,42 @@ argument:
 				CMD_TABLE[COMMAND_COUNT].args[numArgs] = $2;
 				CMD_TABLE[COMMAND_COUNT].num_arguments++;
 			}		
+	}
+	|
+	argument VARIABLE
+	{
+		//This is an argument. Add it to the current command's arguments list, if space permits
+			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;
+			
+			if(numArgs < MAX_ARGUMENTS) {
+				char *envvar = getenv($2);
+				CMD_TABLE[COMMAND_COUNT].args[numArgs] = envvar;
+				CMD_TABLE[COMMAND_COUNT].num_arguments++;
+			}
+	}
+	|
+	command VARIABLE
+	{
+		//This is an argument. Add it to the current command's arguments list, if space permits
+			int numArgs = CMD_TABLE[COMMAND_COUNT].num_arguments;
+			
+			if(numArgs < MAX_ARGUMENTS) {
+				char *envvar = getenv($2);
+
+				if(envvar == NULL) printf("Environment variable %s not found\n", $2);
+				else {
+					//printf("%s\n", getenv($2));
+					CMD_TABLE[COMMAND_COUNT].args[numArgs] = envvar;
+					CMD_TABLE[COMMAND_COUNT].num_arguments++;
+				}
+			}		
+	}
+	|
+	VARIABLE
+	{
+		char *envvar = getenv($1);
+		if(envvar == NULL) printf("Environment variable %s not found\n", $1);
+		else printf("%s\n", getenv($1));
 	}
 	;
 

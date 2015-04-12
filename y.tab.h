@@ -60,7 +60,8 @@ extern int yydebug;
     PIPE = 270,
     UNALIAS = 271,
     PRINTALIAS = 272,
-    WORD = 273
+    WORD = 273,
+    VARIABLE = 274
   };
 #endif
 /* Tokens.  */
@@ -80,6 +81,7 @@ extern int yydebug;
 #define UNALIAS 271
 #define PRINTALIAS 272
 #define WORD 273
+#define VARIABLE 274
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -91,7 +93,7 @@ union YYSTYPE
 	int number;
 	char *string;
 
-#line 95 "y.tab.h" /* yacc.c:1909  */
+#line 97 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

@@ -188,7 +188,7 @@ void execute_command(void) {
 		if(aliasindex != -1 ) {
 			//ALIAS
 			//printf("Alias found!\n");
-			externcommand = NULL;
+			CMD_TABLE[currcmd].is_external = 0;
 
 			//HANDLE INFINITE ALIAS LOOPS
 			if(alias_root == NULL) {
@@ -203,6 +203,7 @@ void execute_command(void) {
 				return;
 			} else {
 				//No alias loop found. Trace the alias to a command
+				ignore_EOF = 1;
 				parse_scan_string(aliases[aliasindex].aliascontent);
 				execute_command();
 			}
@@ -282,10 +283,9 @@ void execute_command(void) {
 	}
 
 	// RESET externcommand AND INCREMENT COMMAND_COUNT
-		//externcommand = NULL;
-		//alias_root = NULL;
 		COMMAND_COUNT = (COMMAND_COUNT + 1) % 100;
 		CMD_TABLE[COMMAND_COUNT].is_external = 0;
+		ignore_EOF = 0;
 }
 
 int main(void) {

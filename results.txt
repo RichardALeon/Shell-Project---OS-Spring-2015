@@ -1,0 +1,15 @@
+total 180
+-rw-rw-r-- 1 rleon rleon    23 Apr 11 17:27 commands.txt
+-rw-rw-r-- 1 rleon rleon  7310 Apr 11 20:33 coolshell.c
+-rw-rw-r-- 1 rleon rleon  1094 Apr 11 20:33 coolshellincludes.h
+-rw-rw-r-- 1 rleon rleon   989 Apr 11 20:36 coolshell.l
+-rw-rw-r-- 1 rleon rleon  4191 Apr 11 20:19 coolshell.y
+-rw-rw-r-- 1 rleon rleon 48863 Apr 11 20:36 lex.yy.c
+-rwxrwxr-x 1 rleon rleon 38493 Apr 11 20:36 main
+-rw-rw-r-- 1 rleon rleon   113 Apr  3 18:02 makefile
+-rw-rw-r-- 1 rleon rleon    82 Apr  3 18:29 README.md
+-rw-rw-r-- 1 rleon rleon     0 Apr 11 20:39 results.txt
+-rw-rw-r-- 1 rleon rleon 50655 Apr 11 20:36 y.tab.c
+-rw-rw-r-- 1 rleon rleon  2821 Apr 11 20:36 y.tab.h
+ (﻿ ͡° ͜ʖ ͡°) ~~  (﻿ ͡° ͜ʖ ͡°) ~~  (﻿ ͡° ͜ʖ ͡°) ~~ /home/rleon
+ (﻿ ͡° ͜ʖ ͡°) ~~ Goodbye!

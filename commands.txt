@@ -2,4 +2,9 @@ ls -l
 cd
 pwd
 echo "foo"
+alias a b
+alias b c
+alias c a
+alias
+a
 bye
